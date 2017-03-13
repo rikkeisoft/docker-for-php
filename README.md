@@ -1,16 +1,17 @@
 # docker-for-php
 
-A stack for run PHP7 with docker
+A stack for running PHP7 application inside Docker containers.
 
 ## Features
-- [x] Using PHP 7.0.x , NGINX 1.10.x (stable) and MySQL 5.7.x (stable)
-- [x] You can manage all logs in a directory (`storage/logs`)
-- [x] You can specify NGINX amd PHP FPM config
-- [x] All database file of MySQL are saved and restored in `storage/database`
-- [x] Forward agent to php7 container, that allow `git clone source` and `ssh` to your server easily
+- [x] Using PHP-FPM 7.0.x, Nginx 1.10.x (stable) and MySQL 5.7.x (stable).
+- [x] You can manage all logs in a directory (`storage/logs`).
+- [x] You can specify your own Nginx and PHP-FPM config.
+- [x] All MySQL database files are saved in `storage/database`.
+- [x] Enable SSH Agent Forwarding from your host machine to `php7` container. It allows you to use your local SSH keys instead of leaving keys sitting on your server.
 
 ## Requirement
-- docker-compose 1.11+
+- Docker Engine 1.13.0+
+- Docker Compose 1.11.0+
 
 ## Installation & Usage
 

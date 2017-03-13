@@ -1,8 +1,12 @@
 version: "3"
+
 services:
-  # mysql 5.7.x
+  # MySQL 5.7.x
   db:
-    restart: always
+    extends:
+      file: ./docker-compose-common.yml
+      service: default_base_service
+    container_name: db
     image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: ro0tpass
@@ -13,25 +17,31 @@ services:
       - ./storage/database:/var/lib/mysql
       - ./storage/logs:/var/log/mysql
 
-  # php-fpm 7.0.x
+  # PHP-FPM 7.0.x
   php7:
-    restart: always
+    extends:
+      file: ./docker-compose-common.yml
+      service: default_base_service
+    container_name: php7
     build: ./php7.0-fpm
     environment:
       DEBUG: 1
       SSH_AUTH_SOCK: /ssh-agent
     volumes:
-      - $SSH_AUTH_SOCK:/ssh-agent # Forward local machine SSH key to docker
+      - $SSH_AUTH_SOCK:/ssh-agent # Forward SSH Agent to Docker container
       - ./php7.0-fpm/php.ini:/etc/php.ini
       - ./php7.0-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf
       - ./storage/logs:/var/log/php-fpm
       - .:/app
-
     links:
       - db
 
-  # nginx 1.10.x
+  # Nginx 1.10.x
   web:
+    extends:
+      file: ./docker-compose-common.yml
+      service: default_base_service
+    container_name: web
     image: nginx:stable-alpine
     ports:
       - "8080:80"
