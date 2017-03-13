@@ -16,7 +16,16 @@ A stack for run PHP7 with docker
 
 ```bash
 $ git clone git@github.com:rikkeisoft/docker-for-php.git deploy
-$ docker-compose up
+$ docker-compose up -d
+```
+
+If you have problem with file permission, please ensure you were setting correct HTTPDUSER in `php-fpm.conf` file and run
+> My case, HTTPDUSER is www-data
+
+```bash
+$ extract $HTTPDUSER=www-data
+$ sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX storage bootstrap/cache
+$ sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX storage bootstrap/cache
 ```
 
 ## Contributing
