@@ -24,7 +24,7 @@ If you have problem with file permission, please ensure you were setting correct
 > My case, HTTPDUSER is www-data
 
 ```bash
-$ extract $HTTPDUSER=www-data
+$ export HTTPDUSER=www-data
 $ sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX storage bootstrap/cache
 $ sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX storage bootstrap/cache
 ```
