@@ -3,30 +3,29 @@ version: "3"
 services:
   # MySQL 5.7.x
   db:
-    extends:
-      file: ./docker-compose-common.yml
-      service: default_base_service
-    container_name: db
+    restart: always
     image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: ro0tpass
       MYSQL_DATABASE:      homestead
       MYSQL_USER:          homestead
       MYSQL_PASSWORD:      secret
+      TERM:                linux
     volumes:
       - ./storage/database:/var/lib/mysql
       - ./storage/logs:/var/log/mysql
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
   # PHP-FPM 7.0.x
   php7:
-    extends:
-      file: ./docker-compose-common.yml
-      service: default_base_service
-    container_name: php7
+    restart: always
     build: ./php7.0-fpm
     environment:
-      DEBUG: 1
+      DEBUG:         1
       SSH_AUTH_SOCK: /ssh-agent
+      TERM:          linux
     volumes:
       - $SSH_AUTH_SOCK:/ssh-agent # Forward SSH Agent to Docker container
       - ./php7.0-fpm/php.ini:/etc/php.ini
@@ -35,14 +34,15 @@ services:
       - .:/app
     links:
       - db
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
   # Nginx 1.10.x
   web:
-    extends:
-      file: ./docker-compose-common.yml
-      service: default_base_service
-    container_name: web
+    restart: always
     image: nginx:stable-alpine
+    environment: []
     ports:
       - "8080:80"
     volumes:
@@ -51,3 +51,6 @@ services:
       - .:/app
     links:
       - php7
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
