@@ -22,6 +22,7 @@ services:
   php7:
     restart: always
     build: ./php7.0-fpm
+    image: rikkeisoft/docker-for-php:latest
     environment:
       DEBUG:         1
       SSH_AUTH_SOCK: /ssh-agent
