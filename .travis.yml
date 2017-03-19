@@ -1,0 +1,35 @@
+sudo: required
+services:
+  - docker
+
+env:
+  - COMPOSE_VERSION=1.11.2
+
+before_install:
+  - sudo apt-get remove docker docker-engine
+  - sudo apt-get update
+  - sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common linux-image-extra-$(uname -r) linux-image-extra-virtual
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y install docker-ce
+  - docker -v
+  - sudo rm /usr/local/bin/docker-compose
+  - sudo curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+  - sudo chmod +x /usr/local/bin/docker-compose
+  - docker-compose -v
+  - eval `ssh-agent -s`
+
+script:
+  - docker-compose up -d
+  - docker-compose ps
+  # Your test script
+  - curl -I http://127.0.0.1:8080
+
+notifications:
+  slack:
+    on_pull_requests: false
+    on_success: always
+    on_failure: always
+    rooms:
+      secure: HpqxD3xbHt/UjNaap4fWH3aSr6mlQM1/bB5jxUjgdbmhJh6odBTSYzGGTHOkyN+xHS6GcwRtzEIkwBd0qoLGYtVlLjYu5gWQdSHRpVfzx/W98rL+LdRFZaU87DDInsnm5ViusMmZ7WYj1UZxHkv7THNHiz8/XlRAyfWImlJzXX+9Mc/ZPOwHYZ7gSz+hI0izafZFKtdg+gIA8TYWS/9KzTJJNKguG4yL7jUFIIQIv7B9CDcTOrVsB4M9/ZR96zWwO3YPEWBwH9rLeOIr++LZ6V8Zra997cnDMMOer06Yi9kfX6J1mvYp5+xV3HRY/sZYcPpuC/1O4naq5Pd/o++fu38mlkH9N2XChucZUDqHVn1o1KgDRoIQMilyicNpy2GVzIyaY4HxiiTB8AecAkTwYlPNfulyEevy+lQ2srt1av4FIs/9cpzBVIfeOkocOQ/t/YBYjv764MQyALeYnVhTUHdYyUuzLyktH5ViYIukU54ehREMA8DzxPNCuGM6SZjLFssTbk91bPk/Km60F3EyYRFBYzI8OFSbf+KMOEOReq00mJy4m0er5UI+LPEn0Ih9FWWAE86oKhsToy2V7cxoM7pZsvrQomkZt8mADb4fPkV2cxNrzV5Hmsi7hG7efhOAsnszQNtVdJTayAJBzLWYjQWPkcRQQQolUAvBMkZxVlQ=
