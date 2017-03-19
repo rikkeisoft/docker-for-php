@@ -1,0 +1,54 @@
+sudo: required
+services:
+  - docker
+
+env:
+  global:
+    - COMPOSE_VERSION=1.11.2
+    - DOCKER_REPO=rikkeisoft/docker-for-php
+    - secure: Veb1gg9W0iJXy7OU8AwlgLE/w8V82mSU8IwMA1dNV+crWaWqHHZr7WwAph6l0aTdBO551NJc2qUOz2jd3L36wnyNAE5kJ3eI+4PBx5PFqA4vc/+x3XfvihqnV23DeARI1GiU6kbWj4OBHuQwwrHTDrH7zAfBLHNIoN1hjOexS1Prms0pskxS43Ez28t7Lvi3nbm0WGfJbeJYcUI1GonFi06oENG5lx35BRxRwQGGE9idpdrE/ZrqihodmPXOrf1/I1/OwZ7AN8xbuqkbcDLK/HBLP/cZ3fPFiNgZiM83uPIM4pz+3fOjs/tpS67sE+oaZ8sTGYVTZmqralA7KN6XWckZMhUANHp2LbtPFnpweTsEUg5EBKa6kXKxqp7PuqlD5CVuyyIRPfrY8vzjHWV6jmoS7+hDU1/mn4Jma1HfSb6zf2ieViWwxuFGjVPkBCBhDt0W/an9m8ODWaxPv5hGr2pcRp4wfs+38F5ete/rC/Z1NMwUT76D6LzHTdupC+/RJbz9uHymLw9QL2WxR1aRBnrWNWsSLWq5glwz6m0k4DbAmsSPJvgg2MYmyLuCrhLN3GdS6eeHWBOMXmJPmuE6YgIUjjBIg+IAqmE2YOjeluAGK0kmUo2B9aWsnJ3+LcAIQb/BduSc1IMIeDqCwQlE18YOXLvYHxdAIljfxgSwhr0= # DOCKER_USER
+    - secure: fkKAjtPBaLjo7AHoLO8bg3dfSEKh69BZ+KABIj7+GlOrvCDnQP0UUZvizaV+Sr4tvfM98k9EJ0zIuIQD02nVHQJAcj2x2KUC5ojtfcHNjSeyEMMQtKbFPdq/R3CKQlUyi/abjUm3MRPMdEjLWd7cWnQ8EJiG0ue6++Q3gys7j1hKzAmoBGDn00ZojzdMVecqMczsibmItNJdiTGUdAyjOOf7hbWmfjWLpkcYElgyop8z867zxbfEM5tdNWBnK1YywWuXWjBb1+1akbYME8Cf9BlqCYwWJzRRmZm7cFKOlXU27D6u9t7BMhKu2JmC2xK5O05hAeDqdiviJS/luLcUH9Y2C9Ak92aN37tZIhALWFvI1vJ86zqlP3/I2Tlcdvrppb5yDFvBUr8IObbPloUQID7vlaCIYPPI+w1jvQBwg8OM4+ew2rUwo3MmwuwOxIXUWJ+/r+951rEbGlWDZyG8yplnUomchrAChxArB9mN6W0+PXiEiYPVz2a6F8julaFh3FxOsWDkr5y/bkfsaGSVUcPkl83nwytTv5cMiG02YV8M3V+qLP3H0ySs3/X1jCzPg5bS4z43H5lDRT3nMKNdGRi/9oHwp9Qo0ByLtooAK+zcb4PJeHqScXOhb1st6Gn+niWEvIK0+q1MP/aPNsTvCSCqvdJpn4tXSEjjhwdNLWs= # DOCKER_PASSWORD
+
+before_install:
+  - sudo apt-get remove docker docker-engine
+  - sudo apt-get update
+  - sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common linux-image-extra-$(uname -r) linux-image-extra-virtual
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y install docker-ce
+  - docker -v
+  - sudo rm /usr/local/bin/docker-compose
+  - sudo curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+  - sudo chmod +x /usr/local/bin/docker-compose
+  - docker-compose -v
+  - eval `ssh-agent -s`
+
+script:
+  - docker-compose up -d --build
+  - docker-compose ps
+  # Your test scripts
+  - curl -I http://127.0.0.1:8080
+
+after_success:
+- docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+- if [[ ! -z "$TRAVIS_TAG" ]]; then
+  docker tag $DOCKER_REPO:latest $DOCKER_REPO:$TRAVIS_TAG;
+  docker push $DOCKER_REPO:$TRAVIS_TAG;
+  fi
+- if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "master" ]]; then
+  docker tag $DOCKER_REPO:latest $DOCKER_REPO:latest;
+  docker push $DOCKER_REPO:latest;
+  fi
+- if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "develop" ]]; then
+  docker tag $DOCKER_REPO:latest $DOCKER_REPO:develop;
+  docker push $DOCKER_REPO:develop;
+  fi
+
+notifications:
+  slack:
+    on_pull_requests: false
+    on_success: always
+    on_failure: always
+    rooms:
+      secure: HpqxD3xbHt/UjNaap4fWH3aSr6mlQM1/bB5jxUjgdbmhJh6odBTSYzGGTHOkyN+xHS6GcwRtzEIkwBd0qoLGYtVlLjYu5gWQdSHRpVfzx/W98rL+LdRFZaU87DDInsnm5ViusMmZ7WYj1UZxHkv7THNHiz8/XlRAyfWImlJzXX+9Mc/ZPOwHYZ7gSz+hI0izafZFKtdg+gIA8TYWS/9KzTJJNKguG4yL7jUFIIQIv7B9CDcTOrVsB4M9/ZR96zWwO3YPEWBwH9rLeOIr++LZ6V8Zra997cnDMMOer06Yi9kfX6J1mvYp5+xV3HRY/sZYcPpuC/1O4naq5Pd/o++fu38mlkH9N2XChucZUDqHVn1o1KgDRoIQMilyicNpy2GVzIyaY4HxiiTB8AecAkTwYlPNfulyEevy+lQ2srt1av4FIs/9cpzBVIfeOkocOQ/t/YBYjv764MQyALeYnVhTUHdYyUuzLyktH5ViYIukU54ehREMA8DzxPNCuGM6SZjLFssTbk91bPk/Km60F3EyYRFBYzI8OFSbf+KMOEOReq00mJy4m0er5UI+LPEn0Ih9FWWAE86oKhsToy2V7cxoM7pZsvrQomkZt8mADb4fPkV2cxNrzV5Hmsi7hG7efhOAsnszQNtVdJTayAJBzLWYjQWPkcRQQQolUAvBMkZxVlQ=

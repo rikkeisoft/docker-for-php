@@ -1,5 +1,7 @@
 # docker-for-php
 
+[![Build Status](https://travis-ci.org/rikkeisoft/docker-for-php.svg?branch=master)](https://travis-ci.org/rikkeisoft/docker-for-php)
+
 A stack for running PHP7 application inside Docker containers.
 
 ## Features
