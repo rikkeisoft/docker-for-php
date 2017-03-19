@@ -1,0 +1,54 @@
+image: docker:latest
+
+variables:
+  - COMPOSE_VERSION=1.11.2
+  - DOCKER_REPO=rikkeisoft/docker-for-php
+  # DOCKER_USER & DOCKER_PASSWORD
+
+stages:
+  - build
+  - test
+  - release
+
+before_script:
+  - sudo apt-get remove docker docker-engine
+  - sudo apt-get update
+  - sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common linux-image-extra-$(uname -r) linux-image-extra-virtual
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y install docker-ce
+  - docker -v
+  - sudo rm /usr/local/bin/docker-compose
+  - sudo curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+  - sudo chmod +x /usr/local/bin/docker-compose
+  - docker-compose -v
+  - eval `ssh-agent -s`
+
+build:
+  stage: build
+  script:
+    - docker-compose up -d --build
+    - docker-compose ps
+
+test:
+  stage: test
+  script:
+    - curl -I http://127.0.0.1:8080
+
+release:
+  stage: release
+  script:
+    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+    - if [[ ! -z "$TRAVIS_TAG" ]]; then
+      docker tag $DOCKER_REPO:latest $DOCKER_REPO:$TRAVIS_TAG;
+      docker push $DOCKER_REPO:$TRAVIS_TAG;
+      fi
+    - if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "master" ]]; then
+      docker tag $DOCKER_REPO:latest $DOCKER_REPO:latest;
+      docker push $DOCKER_REPO:latest;
+      fi
+    - if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "develop" ]]; then
+      docker tag $DOCKER_REPO:latest $DOCKER_REPO:develop;
+      docker push $DOCKER_REPO:develop;
+      fi
