@@ -6,7 +6,7 @@ services:
     restart: always
     image: mysql:5.7
     environment:
-      MYSQL_ROOT_PASSWORD: ro0tpass
+      MYSQL_ROOT_PASSWORD: rootpass
       MYSQL_DATABASE:      homestead
       MYSQL_USER:          homestead
       MYSQL_PASSWORD:      secret
@@ -14,6 +14,8 @@ services:
     volumes:
       - ./storage/database:/var/lib/mysql
       - ./storage/logs:/var/log/mysql
+    networks:
+      - internal
     dns:
       - 8.8.8.8
       - 8.8.4.4
@@ -33,8 +35,9 @@ services:
       - ./php7.0-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf
       - ./storage/logs:/var/log/php-fpm
       - .:/app
-    links:
-      - db
+    networks:
+      - external
+      - internal
     dns:
       - 8.8.8.8
       - 8.8.4.4
@@ -43,15 +46,20 @@ services:
   web:
     restart: always
     image: nginx:stable-alpine
-    environment: []
     ports:
       - "8080:80"
     volumes:
       - ./storage/logs:/var/log/nginx
       - ./nginx/site.conf:/etc/nginx/conf.d/site.conf:ro
       - .:/app
-    links:
-      - php7
+    networks:
+      - external
     dns:
       - 8.8.8.8
       - 8.8.4.4
+
+networks:
+  external:
+    driver: bridge
+  internal:
+    driver: bridge
