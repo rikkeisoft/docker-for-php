@@ -22,13 +22,17 @@ $ git clone git@github.com:rikkeisoft/docker-for-php.git deploy
 $ docker-compose up -d
 ```
 
-If you have problem with file permission, please ensure you were setting correct HTTPDUSER in `php-fpm.conf` file and run
-> My case, HTTPDUSER is www-data
+If you have problem with file permission, please ensure you set correct the owner, which PHP-FPM is running under, in `php-fpm.conf`. Then execute:
+```
+docker exec -it dockerforphp_php7_1 /bin/bash /app/fix_perms.sh -u <your_php_fpm_user> <your_path>
+```
 
+**Notice**: 
+- By default, `php7` is running under `www-data` user. So you don't need to use `-u` flag if you didn't change the default owner of PHP-FPM.
+
+> Example, my PHP-FPM is running under `nginx` user. So I execute the following commands:
 ```bash
-$ export HTTPDUSER=www-data
-$ sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX storage bootstrap/cache
-$ sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX storage bootstrap/cache
+$ docker exec -it dockerforphp_php7_1 /bin/bash /app/fix_perms.sh -u nginx /app/storage
 ```
 
 ## Contributing
@@ -42,4 +46,4 @@ If you would like to help take a look at the [list of issues](issues).
 ## License
 This project is released under the MIT License.   
 Copyright © 2017 Rikkeisoft Co. Ltd.,   
-Please see [License File](LICENSE.md) for more information.
+Please see [LICENSE](LICENSE.md) for more information.

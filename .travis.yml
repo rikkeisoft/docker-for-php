@@ -27,8 +27,10 @@ before_install:
 script:
   - docker-compose up -d --build
   - docker-compose ps
+  # change permission for writable directories
+  - docker exec -it dockerforphp_php7_1 /bin/bash /app/fix_perms.sh /app/storage
   # Your test scripts
-  - curl -I http://127.0.0.1:8080
+  - curl --fail -F "image=@`pwd`/.travis.yml" http://127.0.0.1:8080
 
 after_success:
 - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
