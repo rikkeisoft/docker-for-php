@@ -6,9 +6,9 @@ A stack for running PHP7 application inside Docker containers.
 
 ## Features
 - [x] Using PHP-FPM 7.0.x, Nginx 1.10.x (stable) and MySQL 5.7.x (stable).
-- [x] You can manage all logs in a directory (`storage/logs`).
+- [x] You can manage all logs in a directory (`data/logs`).
 - [x] You can specify your own Nginx and PHP-FPM config.
-- [x] All MySQL database files are saved in `storage/database`.
+- [x] All MySQL database files are saved in `data/database`.
 - [x] Enable SSH Agent Forwarding from your host machine to `php7` container. It allows you to use your local SSH keys instead of leaving keys sitting on your server.
 
 ## Requirement
@@ -24,7 +24,7 @@ $ docker-compose up -d
 
 If you have problem with file permission, please ensure you set correct the owner, which PHP-FPM is running under, in `php-fpm.conf`. Then execute:
 ```
-docker exec -it dockerforphp_php7_1 /bin/bash /app/fix_perms.sh -u <your_php_fpm_user> <your_path>
+docker exec -it dockerforphp_php7_1 /bin/bash /app/fix_permission.sh -u <your_php_fpm_user> <your_path>
 ```
 
 **Notice**: 
@@ -32,7 +32,8 @@ docker exec -it dockerforphp_php7_1 /bin/bash /app/fix_perms.sh -u <your_php_fpm
 
 > Example, my PHP-FPM is running under `nginx` user. So I execute the following commands:
 ```bash
-$ docker exec -it dockerforphp_php7_1 /bin/bash /app/fix_perms.sh -u nginx /app/storage
+$ /bin/sh scripts/copy_fix_permission.sh dockerforphp_php7_1
+$ docker exec -it dockerforphp_php7_1 /bin/bash /fix_permission.sh -u nginx /app/storage
 ```
 
 ## Contributing
