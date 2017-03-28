@@ -22,4 +22,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 WORKDIR /app
 
+COPY ../../scripts/fix_permission.sh .
+
 CMD ["php-fpm"]
