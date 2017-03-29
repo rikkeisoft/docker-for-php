@@ -28,7 +28,8 @@ script:
   - docker-compose up -d --build
   - docker-compose ps
   # change permission for writable directories
-  - docker exec -it dockerforphp_php7_1 /bin/bash /app/fix_perms.sh /app/storage
+  - /bin/sh scripts/copy_fix_permission.sh dockerforphp_php7_1
+  - docker exec -it dockerforphp_php7_1 /bin/bash /fix_permission.sh /app/storage
   # Your test scripts
   - curl --fail -F "image=@`pwd`/.travis.yml" http://127.0.0.1:8080
 
