@@ -26,15 +26,14 @@ services:
     build: ./services/php7.0-fpm
     image: rikkeisoft/docker-for-php:latest
     environment:
-      DEBUG:         1
-      SSH_AUTH_SOCK: /ssh-agent
       TERM:          linux
+      SSH_AUTH_SOCK: /ssh-agent
     volumes:
-      - $SSH_AUTH_SOCK:/ssh-agent # Forward SSH Agent to Docker container
-      - ./config/php/php.ini:/etc/php.ini
-      - ./config/php/php-fpm.conf:/usr/local/etc/php-fpm.conf
+      - ./services/php7.0-fpm/php.ini:/etc/php.ini:ro
+      - ./services/php7.0-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf:ro
       - ./data/logs/php:/var/log/php-fpm
       - ./app:/app
+      - $SSH_AUTH_SOCK:/ssh-agent # Forward SSH Agent to Docker container
     networks:
       - external
       - internal
@@ -49,8 +48,8 @@ services:
     ports:
       - "8080:80"
     volumes:
+      - ./services/nginx/site.conf:/etc/nginx/conf.d/site.conf:ro
       - ./data/logs/nginx:/var/log/nginx
-      - ./config/nginx/site.conf:/etc/nginx/conf.d/site.conf:ro
       - ./app:/app
     networks:
       - external

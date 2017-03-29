@@ -15,7 +15,7 @@ A stack for running PHP7 application inside Docker containers.
 - Docker Engine 1.13.0+
 - Docker Compose 1.11.0+
 
-## Installation & Usage
+## Installation
 
 ```bash
 $ git clone git@github.com:rikkeisoft/docker-for-php.git deploy
@@ -23,17 +23,19 @@ $ docker-compose up -d
 ```
 
 If you have problem with file permission, please ensure you set correct the owner, which PHP-FPM is running under, in `php-fpm.conf`. Then execute:
-```
-docker exec -it dockerforphp_php7_1 /bin/bash /app/fix_permission.sh -u <your_php_fpm_user> <your_path>
-```
 
-**Notice**: 
-- By default, `php7` is running under `www-data` user. So you don't need to use `-u` flag if you didn't change the default owner of PHP-FPM.
-
-> Example, my PHP-FPM is running under `nginx` user. So I execute the following commands:
 ```bash
-$ /bin/sh scripts/copy_fix_permission.sh dockerforphp_php7_1
-$ docker exec -it dockerforphp_php7_1 /bin/bash /fix_permission.sh -u nginx /app/storage
+$ docker exec -it dockerforphp_php7_1 /usr/local/bin/app/fix_permission.sh -u <your_php_fpm_user> <your_path>
+```
+
+> **Notice**:
+> - By default, `php7` is running under `www-data` user. So you don't need to use `-u` flag if you didn't change the default owner of PHP-FPM.
+
+## Usage
+
+```bash
+$ docker exec -it source_php7_1 /bin/bash
+root@159466f09128:/app#
 ```
 
 ## Contributing

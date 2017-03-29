@@ -1,6 +1,16 @@
 #!/bin/bash
 usage() {
-  echo "Usage: $0 [-u www-data] path1 path2" 1>&2; exit 1;
+  echo "" 1>&2;
+  echo "Usage:" 1>&2;
+  echo "  $0 [-u USERNAME] PATH1 PATH2" 1>&2;
+  echo "" 1>&2;
+  echo "Options:" 1>&2;
+  echo "  -u USERNAME     Who is PHP-FPM running under, default: 'www-data'" 1>&2;
+  echo "" 1>&2;
+  echo "Arguments:" 1>&2;
+  echo "  PATH:           Path to the directory you wish to modify permissions for" 1>&2;
+  echo "" 1>&2;
+  exit 1;
 }
 
 # Check if user entered arguments
