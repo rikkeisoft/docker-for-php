@@ -32,7 +32,8 @@ docker exec -it dockerforphp_php7_1 /bin/bash /app/fix_permission.sh -u <your_ph
 
 > Example, my PHP-FPM is running under `nginx` user. So I execute the following commands:
 ```bash
-$ docker exec -it dockerforphp_php7_1 /bin/bash /app/fix_permission.sh -u nginx /app/storage
+$ /bin/sh scripts/copy_fix_permission.sh dockerforphp_php7_1
+$ docker exec -it dockerforphp_php7_1 /bin/bash /fix_permission.sh -u nginx /app/storage
 ```
 
 ## Contributing
