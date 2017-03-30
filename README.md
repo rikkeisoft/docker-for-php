@@ -25,7 +25,7 @@ $ docker-compose up -d
 If you have problem with file permission, please ensure you set correct the owner, which PHP-FPM is running under, in `php-fpm.conf`. Then execute:
 
 ```bash
-$ docker exec -it dockerforphp_php7_1 /usr/local/bin/app/fix_permission -u <your_php_fpm_user> <your_path>
+$ docker exec -it dockerforphp_php7_1 /usr/local/bin/fix_permission /app/storage
 ```
 
 > **Notice**:
