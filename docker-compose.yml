@@ -12,8 +12,8 @@ services:
       MYSQL_PASSWORD:      secret
       TERM:                linux
     volumes:
-      - ./storage/database:/var/lib/mysql
-      - ./storage/logs:/var/log/mysql
+      - ./data/database:/var/lib/mysql
+      - ./data/logs/mysql:/var/log/mysql
     networks:
       - internal
     dns:
@@ -23,18 +23,17 @@ services:
   # PHP-FPM 7.0.x
   php7:
     restart: always
-    build: ./php7.0-fpm
+    build: ./services/php7.0-fpm
     image: rikkeisoft/docker-for-php:latest
     environment:
-      DEBUG:         1
-      SSH_AUTH_SOCK: /ssh-agent
       TERM:          linux
+      SSH_AUTH_SOCK: /ssh-agent
     volumes:
+      - ./services/php7.0-fpm/php.ini:/etc/php.ini:ro
+      - ./services/php7.0-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf:ro
+      - ./data/logs/php:/var/log/php-fpm
+      - ./app:/app
       - $SSH_AUTH_SOCK:/ssh-agent # Forward SSH Agent to Docker container
-      - ./php7.0-fpm/php.ini:/etc/php.ini
-      - ./php7.0-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf
-      - ./storage/logs:/var/log/php-fpm
-      - .:/app
     networks:
       - external
       - internal
@@ -49,9 +48,9 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./storage/logs:/var/log/nginx
-      - ./nginx/site.conf:/etc/nginx/conf.d/site.conf:ro
-      - .:/app
+      - ./services/nginx/site.conf:/etc/nginx/conf.d/site.conf:ro
+      - ./data/logs/nginx:/var/log/nginx
+      - ./app:/app
     networks:
       - external
     dns:
