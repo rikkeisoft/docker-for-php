@@ -9,7 +9,6 @@ A stack for running PHP7 application inside Docker containers.
 - [x] You can manage all logs in a directory (`data/logs`).
 - [x] You can specify your own Nginx and PHP-FPM config.
 - [x] All MySQL database files are saved in `data/database`.
-- [x] Enable SSH Agent Forwarding from your host machine to `php7` container. It allows you to use your local SSH keys instead of leaving keys sitting on your server.
 
 ## Requirement
 - Docker Engine 1.13.0+

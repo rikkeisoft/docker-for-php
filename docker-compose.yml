@@ -27,13 +27,11 @@ services:
     image: rikkeisoft/docker-for-php:latest
     environment:
       TERM:          linux
-      SSH_AUTH_SOCK: /ssh-agent
     volumes:
       - ./services/php7.0-fpm/php.ini:/etc/php.ini:ro
       - ./services/php7.0-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf:ro
       - ./data/logs/php:/var/log/php-fpm
       - ./app:/app
-      - $SSH_AUTH_SOCK:/ssh-agent # Forward SSH Agent to Docker container
     networks:
       - external
       - internal
